@@ -21,7 +21,6 @@ export interface Round {
   // number mode
   category?: string;
   number?: number;
-  imposterApprox?: number; // fuzzy number shown to the imposter
 }
 
 // Room meta — single JSON blob, written only by host-driven mutations and
@@ -57,7 +56,6 @@ export interface PlayerReveal {
   // number mode
   category?: string; // everyone
   number?: number; // crew only
-  imposterApprox?: number; // imposter only
 }
 
 export interface RoomView {

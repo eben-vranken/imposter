@@ -349,10 +349,8 @@ function RevealContent({
       <div>
         <div className="imposter-title">🤫 You are the IMPOSTER</div>
         <p className="category">{reveal.category}</p>
-        <div className="role-label">It&apos;s roughly around</div>
-        <div className="secret-number">{reveal.imposterApprox}</div>
         <small className="hint-caption">
-          Bluff a rating in this ballpark — you don&apos;t know the exact number.
+          You don&apos;t know the number — bluff a rating and try to blend in.
         </small>
       </div>
     );

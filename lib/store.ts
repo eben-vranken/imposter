@@ -188,13 +188,12 @@ function revealFor(round: Round, playerId: string): PlayerReveal {
       : { mode: "word", role: "crew", word: round.word };
   }
 
-  // number mode — category is shown to everyone
+  // number mode — category is shown to everyone, but the imposter gets no number
   return isImposter
     ? {
         mode: "number",
         role: "imposter",
         category: round.category,
-        imposterApprox: round.imposterApprox,
       }
     : {
         mode: "number",
@@ -246,13 +245,7 @@ function buildRound(mode: GameMode, imposterId: string): Round {
   }
   const category = pick(NUMBER_CATEGORIES);
   const number = Math.floor(Math.random() * 11); // 0..10
-  return { mode, imposterId, category, number, imposterApprox: fuzz(number) };
-}
-
-// A number 2–3 off the real one (clamped 0..10, never equal).
-function fuzz(n: number): number {
-  const options = [n - 3, n - 2, n + 2, n + 3].filter((x) => x >= 0 && x <= 10 && x !== n);
-  return pick(options);
+  return { mode, imposterId, category, number };
 }
 
 export async function kickPlayer(

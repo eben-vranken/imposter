@@ -26,7 +26,7 @@ plenty fast for this game.
 ### The two modes
 
 - **Word** — Crew all see the same secret word. The imposter sees only a *related* hint word (e.g. word `beach` → hint `summer`) to help them bluff.
-- **Number** — A category like *"How awkward is this? (0–10)"* is shown to **everyone**. Crew see the exact number (e.g. `8 / 10`); the imposter sees `It's roughly around X` (2–3 off) so they can fake a rating in the right ballpark.
+- **Number** — A category like *"How awkward is this? (0–10)"* is shown to **everyone**. Crew see the exact number (e.g. `8 / 10`); the imposter sees only the category (no number) and has to bluff a rating to blend in.
 
 ---
 
