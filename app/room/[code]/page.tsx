@@ -279,6 +279,14 @@ function Reveal({
 
   return (
     <>
+      <div className={`starter-banner ${r.youStart ? "you" : ""}`}>
+        {r.youStart ? (
+          <>👉 You start the round — give the first clue out loud!</>
+        ) : (
+          <>👉 <span className="who">{r.starterName}</span> starts the round</>
+        )}
+      </div>
+
       <div
         className={`reveal-hold ${held ? "held " + r.role : ""}`}
         onPointerDown={() => setHeld(true)}

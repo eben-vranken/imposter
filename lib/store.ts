@@ -181,11 +181,13 @@ export async function buildView(code: string, playerId: string): Promise<RoomVie
 // imposter's identity; the imposter never receives the real word/number.
 function revealFor(round: Round, playerId: string): PlayerReveal {
   const isImposter = round.imposterId === playerId;
+  // Who goes first is public — same on every phone.
+  const starter = { starterName: round.starterName, youStart: round.starterId === playerId };
 
   if (round.mode === "word") {
     return isImposter
-      ? { mode: "word", role: "imposter", imposterHint: round.imposterHint }
-      : { mode: "word", role: "crew", word: round.word };
+      ? { mode: "word", role: "imposter", imposterHint: round.imposterHint, ...starter }
+      : { mode: "word", role: "crew", word: round.word, ...starter };
   }
 
   // number mode — category is shown to everyone, but the imposter gets no number
@@ -194,12 +196,14 @@ function revealFor(round: Round, playerId: string): PlayerReveal {
         mode: "number",
         role: "imposter",
         category: round.category,
+        ...starter,
       }
     : {
         mode: "number",
         role: "crew",
         category: round.category,
         number: round.number,
+        ...starter,
       };
 }
 
@@ -227,7 +231,10 @@ export async function startRound(
   }
   const imposterId = pick(candidates);
 
-  const round = buildRound(mode, imposterId);
+  // A random connected player has to give the first word/clue out loud.
+  const starter = pick(live);
+
+  const round = buildRound(mode, imposterId, starter.id, starter.name);
 
   meta.mode = mode;
   meta.phase = "reveal";
@@ -238,14 +245,20 @@ export async function startRound(
   return { ok: true };
 }
 
-function buildRound(mode: GameMode, imposterId: string): Round {
+function buildRound(
+  mode: GameMode,
+  imposterId: string,
+  starterId: string,
+  starterName: string
+): Round {
+  const base = { mode, imposterId, starterId, starterName };
   if (mode === "word") {
     const entry = pick(WORDS);
-    return { mode, imposterId, word: entry.word, imposterHint: entry.imposterHint };
+    return { ...base, word: entry.word, imposterHint: entry.imposterHint };
   }
   const category = pick(NUMBER_CATEGORIES);
   const number = Math.floor(Math.random() * 11); // 0..10
-  return { mode, imposterId, category, number };
+  return { ...base, category, number };
 }
 
 export async function kickPlayer(

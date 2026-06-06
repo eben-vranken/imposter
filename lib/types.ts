@@ -15,6 +15,8 @@ export interface Player {
 export interface Round {
   mode: GameMode;
   imposterId: string;
+  starterId: string; // the player who speaks first this round
+  starterName: string;
   // word mode
   word?: string;
   imposterHint?: string;
@@ -50,6 +52,8 @@ export interface PublicPlayer {
 export interface PlayerReveal {
   mode: GameMode;
   role: "crew" | "imposter";
+  starterName: string; // who goes first (shown to everyone)
+  youStart: boolean;
   // word mode
   word?: string; // crew only
   imposterHint?: string; // imposter only
