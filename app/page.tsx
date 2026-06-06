@@ -62,25 +62,36 @@ export default function Landing() {
 
   return (
     <>
-      <h1 className="logo">IMPOSTER</h1>
-      <p className="tagline">One of you is faking it. 🤫</p>
+      <div className="sysbar">
+        <span className="live">PROTOCOL ONLINE</span>
+        <span className="jp">待機</span>
+      </div>
+
+      <Emblem />
+      <h1 className="logo">
+        IMPOST<span className="accent">ER</span>
+      </h1>
+      <p className="tagline">
+        One of you is faking it <span className="jp">疑心</span>
+      </p>
+      <div className="hazard" style={{ margin: "12px 0 16px" }} />
 
       {view === "home" && (
         <div className="card">
           <button className="btn" onClick={() => { setError(""); setView("create"); }}>
             Create Room
           </button>
-          <div className="divider">— OR —</div>
+          <div className="divider">OR</div>
           <button className="btn secondary" onClick={() => { setError(""); setView("join"); }}>
             Join Room
           </button>
-          <p className="hint-text">3–12 players · everyone on their own phone</p>
+          <p className="hint-text">3–12 operatives · one device each</p>
         </div>
       )}
 
       {view === "create" && (
         <div className="card">
-          <label htmlFor="name">Your name</label>
+          <label htmlFor="name">Callsign</label>
           <input
             id="name"
             value={name}
@@ -90,7 +101,7 @@ export default function Landing() {
             autoFocus
           />
           <button className="btn" onClick={create} disabled={busy}>
-            {busy ? "Creating…" : "Create Room"}
+            {busy ? "Initializing…" : "Open Channel"}
           </button>
           {error && <p className="error">{error}</p>}
           <button className="btn ghost" onClick={() => setView("home")}>← Back</button>
@@ -99,7 +110,7 @@ export default function Landing() {
 
       {view === "join" && (
         <div className="card">
-          <label htmlFor="code">Room code</label>
+          <label htmlFor="code">Channel Code</label>
           <input
             id="code"
             className="code-input"
@@ -110,7 +121,7 @@ export default function Landing() {
             autoCapitalize="characters"
             autoFocus
           />
-          <label htmlFor="jname" style={{ marginTop: 16 }}>Your name</label>
+          <label htmlFor="jname" style={{ marginTop: 16 }}>Callsign</label>
           <input
             id="jname"
             value={name}
@@ -119,12 +130,28 @@ export default function Landing() {
             maxLength={20}
           />
           <button className="btn" onClick={join} disabled={busy}>
-            {busy ? "Joining…" : "Join Room"}
+            {busy ? "Linking…" : "Connect"}
           </button>
           {error && <p className="error">{error}</p>}
           <button className="btn ghost" onClick={() => setView("home")}>← Back</button>
         </div>
       )}
     </>
+  );
+}
+
+// Original angular emblem — a warning-triangle reticle inside a rotating ring.
+// Not based on any real-world logo.
+function Emblem() {
+  return (
+    <svg className="emblem" viewBox="0 0 100 100" fill="none" stroke="currentColor" aria-hidden="true">
+      <g className="spin">
+        <circle cx="50" cy="50" r="46" strokeWidth="1" strokeDasharray="5 9" opacity="0.55" />
+      </g>
+      <polygon points="50,15 85,77 15,77" strokeWidth="2" />
+      <polygon points="50,39 67,71 33,71" strokeWidth="1.4" opacity="0.7" />
+      <line x1="27" y1="58" x2="73" y2="58" strokeWidth="1" opacity="0.5" />
+      <circle cx="50" cy="63" r="3" fill="currentColor" stroke="none" />
+    </svg>
   );
 }

@@ -108,9 +108,12 @@ export default function RoomPage() {
   if (status === "notfound") {
     return (
       <div className="card center">
-        <h2>Room {code} not found</h2>
-        <p className="hint-text">It may have expired. Start a fresh one.</p>
-        <button className="btn" onClick={() => router.push("/")}>Home</button>
+        <div className="section-title" style={{ justifyContent: "center" }}>
+          <span className="jp">緊急</span> SIGNAL LOST
+        </div>
+        <h2 style={{ letterSpacing: 2 }}>ROOM {code} NOT FOUND</h2>
+        <p className="hint-text">Channel expired or terminated. Open a new one.</p>
+        <button className="btn" onClick={() => router.push("/")}>Return</button>
       </div>
     );
   }
@@ -120,7 +123,13 @@ export default function RoomPage() {
   }
 
   if (status === "loading" && !view) {
-    return <div className="card center"><p className="hint-text">Loading room…</p></div>;
+    return (
+      <div className="card center">
+        <p className="hint-text">
+          <span className="jp" style={{ color: "var(--orange)" }}>解析</span> · establishing link…
+        </p>
+      </div>
+    );
   }
 
   if (!view) return null;
@@ -128,7 +137,7 @@ export default function RoomPage() {
   return (
     <>
       <div className="topbar">
-        <button className="link-btn" onClick={() => router.push("/")}>← Leave</button>
+        <button className="link-btn" onClick={() => router.push("/")}>◄ DISCONNECT</button>
         <SyncIndicator status={status} />
       </div>
 
@@ -159,7 +168,8 @@ function SyncIndicator({ status }: { status: Status }) {
   return (
     <span className={`sync ${bad ? "bad" : "ok"}`}>
       <span className="dot" />
-      {bad ? "Reconnecting…" : "Synced"}
+      <span className="jp">同期</span>
+      {bad ? "RECONNECT" : "LINK OK"}
     </span>
   );
 }
@@ -219,24 +229,24 @@ function Lobby({
   return (
     <>
       <div className="card code-banner">
-        <div className="label">Room code</div>
+        <div className="label">Room Code <span className="jp">識別</span></div>
         <div className="code">{view.code}</div>
-        <button className="copy-btn" onClick={copyCode}>📋 Copy</button>
+        <button className="copy-btn" onClick={copyCode}>⧉ Copy</button>
       </div>
 
       <div className="card">
         <h3 className="section-title">
-          Players · {connectedCount}/{view.players.length} online
+          Operatives · {connectedCount}/{view.players.length} linked
         </h3>
         <ul className="players">
           {view.players.map((p) => (
             <li className="player-row" key={p.id}>
               <span className={`dot ${p.connected ? "on" : ""}`} />
               <span className="player-name">{p.name}</span>
-              {p.isHost && <span className="badge">Host</span>}
+              {p.isHost && <span className="badge">Cmd</span>}
               {p.id === view.you?.id && <span className="badge you">You</span>}
               {isHost && p.id !== view.you?.id && (
-                <button className="kick" onClick={() => onKick(p.id)}>Kick</button>
+                <button className="kick" onClick={() => onKick(p.id)}>Eject</button>
               )}
             </li>
           ))}
@@ -245,14 +255,16 @@ function Lobby({
 
       {isHost ? (
         <div className="card">
-          <h3 className="section-title">Game mode</h3>
+          <h3 className="section-title">Operation Mode</h3>
           <ModeToggle mode={selectedMode} onSelect={onSelectMode} />
           <button className="btn" onClick={onStart} disabled={!canStart}>
-            {canStart ? "Start Round" : `Need ${Math.max(0, 3 - connectedCount)} more player(s)`}
+            {canStart ? "Commence Round" : `Awaiting ${Math.max(0, 3 - connectedCount)} more`}
           </button>
         </div>
       ) : (
-        <p className="hint-text">Waiting for the host to start the round…</p>
+        <p className="hint-text">
+          <span className="jp" style={{ color: "var(--orange)" }}>待機</span> · standby — command initiates round
+        </p>
       )}
     </>
   );
@@ -273,7 +285,13 @@ function Reveal({
   const [held, setHeld] = useState(false);
   const isHost = view.you?.isHost ?? false;
 
-  if (!r) return <div className="card center"><p className="hint-text">Dealing roles…</p></div>;
+  if (!r) return (
+    <div className="card center">
+      <p className="hint-text">
+        <span className="jp" style={{ color: "var(--orange)" }}>解析</span> · assigning roles…
+      </p>
+    </div>
+  );
 
   const isImposter = r.role === "imposter";
 
@@ -281,9 +299,9 @@ function Reveal({
     <>
       <div className={`starter-banner ${r.youStart ? "you" : ""}`}>
         {r.youStart ? (
-          <>👉 You start the round — give the first clue out loud!</>
+          <>► YOU OPEN — give the first clue out loud</>
         ) : (
-          <>👉 <span className="who">{r.starterName}</span> starts the round</>
+          <>► <span className="who">{r.starterName}</span> opens the round</>
         )}
       </div>
 
@@ -297,10 +315,11 @@ function Reveal({
       >
         {!held ? (
           <div className="reveal-hint">
-            <span className="big">👆</span>
-            Tap &amp; hold to reveal
+            <span className="jp">機密 · 解析</span>
+            <span className="big">▣</span>
+            Hold to decrypt
             <br />
-            (keep it hidden from neighbors!)
+            shield from nearby eyes
           </div>
         ) : (
           <RevealContent reveal={r} isImposter={isImposter} />
@@ -309,12 +328,12 @@ function Reveal({
 
       {isHost ? (
         <div className="card">
-          <h3 className="section-title">Next round</h3>
+          <h3 className="section-title">Next Round</h3>
           <ModeToggle mode={selectedMode} onSelect={onSelectMode} />
-          <button className="btn" onClick={onNewRound}>🔄 New Round</button>
+          <button className="btn" onClick={onNewRound}>↻ New Round</button>
         </div>
       ) : (
-        <p className="hint-text">When you&apos;re ready, talk it out loud. Host deals the next round.</p>
+        <p className="hint-text">Debate out loud — command initiates the next round.</p>
       )}
     </>
   );
@@ -331,11 +350,13 @@ function RevealContent({
     if (isImposter) {
       return (
         <div>
-          <div className="imposter-title">🤫 You are the IMPOSTER</div>
-          <div className="role-label">Your hint word</div>
+          <div className="imposter-title">
+            <span className="jp">警告</span>YOU ARE THE IMPOSTER
+          </div>
+          <div className="role-label">Decoy hint word</div>
           <span className="hint-pill">{reveal.imposterHint}</span>
           <small className="hint-caption">
-            Drop this into conversation to blend in. Don&apos;t get caught!
+            Slip this into the conversation to blend in. Don&apos;t get caught.
           </small>
         </div>
       );
@@ -343,9 +364,9 @@ function RevealContent({
     return (
       <div>
         <div className="role-label">
-          You are <span className="role-crew">CREW</span>
+          Status · <span className="role-crew">CREW</span>
         </div>
-        <div className="role-label">The secret word is</div>
+        <div className="role-label">Secret word</div>
         <div className="secret-word">{reveal.word}</div>
       </div>
     );
@@ -355,10 +376,12 @@ function RevealContent({
   if (isImposter) {
     return (
       <div>
-        <div className="imposter-title">🤫 You are the IMPOSTER</div>
+        <div className="imposter-title">
+          <span className="jp">警告</span>YOU ARE THE IMPOSTER
+        </div>
         <p className="category">{reveal.category}</p>
         <small className="hint-caption">
-          You don&apos;t know the number — bluff a rating and try to blend in.
+          The number is withheld — bluff a rating and try to blend in.
         </small>
       </div>
     );
@@ -366,7 +389,7 @@ function RevealContent({
   return (
     <div>
       <div className="role-label">
-        You are <span className="role-crew">CREW</span>
+        Status · <span className="role-crew">CREW</span>
       </div>
       <p className="category">{reveal.category}</p>
       <div className="secret-number">
@@ -417,10 +440,10 @@ function JoinForm({
   return (
     <div className="card">
       <div className="code-banner">
-        <div className="label">Joining room</div>
+        <div className="label">Linking Channel <span className="jp">識別</span></div>
         <div className="code">{code}</div>
       </div>
-      <label htmlFor="jn" style={{ marginTop: 12 }}>Your name</label>
+      <label htmlFor="jn" style={{ marginTop: 12 }}>Callsign</label>
       <input
         id="jn"
         value={name}
@@ -430,7 +453,7 @@ function JoinForm({
         autoFocus
       />
       <button className="btn" onClick={submit} disabled={busy}>
-        {busy ? "Joining…" : "Join"}
+        {busy ? "Linking…" : "Connect"}
       </button>
       {error && <p className="error">{error}</p>}
       <button className="btn ghost" onClick={onHome}>← Home</button>
